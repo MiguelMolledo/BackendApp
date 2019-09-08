@@ -5,3 +5,20 @@
     2.1 ejecutar docker-compose build
 
 3. Crear django project  ( docker-compose run app sh -c "django-admin.py startproject app .")
+
+4. To test Unit testing files from django
+    4.1 docker-compose run app sh -c "python manage.py test"
+
+
+
+
+
+
+
+
+
+
+# CODIGO UTIL
+docker build .
+docker-compose build
+docker-compose run app sh -c "python manage.py test && flake8"
