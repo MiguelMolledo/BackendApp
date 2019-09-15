@@ -1,6 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
+from core import models
+
+
+def sample_user(email='mmolledo@gmail.com', password='mmolledo'):
+    return get_user_model().objects.create_user(email, password)
+
 
 class ModelTests(TestCase):
 
@@ -17,8 +23,6 @@ class ModelTests(TestCase):
         )
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
-
-
 
     def test_new_user_email_normalized(self):
         """
@@ -39,7 +43,6 @@ class ModelTests(TestCase):
             user = get_user_model().objects.create_user(email=None,
                                                         password='12345')
 
-
     def test_create_new_superuser(self):
         """
         Test creating new Superuser
@@ -51,3 +54,11 @@ class ModelTests(TestCase):
         )
         self.assertTrue(user.is_staff, True)
         self.assertTrue(user.is_superuser, True)
+
+    def test_tag_str(self):
+        """Test the tag string representation"""
+        tag = models.Tag.objects.create(
+            user=sample_user(),
+            name='Vegan'
+        )
+        self.assertEqual(str(tag), tag.name)
