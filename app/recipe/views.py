@@ -18,7 +18,14 @@ class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
 
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        assigned_only = bool(int(self.request.query_params.get('assigned_only', 0)))
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(recipe__isnull=False)
+
+        return queryset.filter(
+            user=self.request.user
+        ).order_by('-name').distinct()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -30,6 +37,7 @@ class TagViewSet(BaseRecipeAttrViewSet):
     """Manage tags in the database"""
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
+
 
 class IngredientViewSet(BaseRecipeAttrViewSet):
     """Manage ingredients in DDBB"""
@@ -49,6 +57,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve the recipies for the authenticated User"""
+
         tags = self.request.query_params.get("tags")
         ingredients = self.request.query_params.get("ingredients")
         queryset = self.queryset
